@@ -4,16 +4,10 @@ APPLE ISSUE - KAFKA LOGS - running out of disk space
 Solution 
 ========
 
-stop the contrail-svc-monitor 
+service contrail-svc-monitor stop --- on all 3 controllers
+service kafka stop --- on all 3 controllers
+rm -rf /tmp/kafka-logs/* --- on all 3 controllers
+Modify /usr/share/kafka/config/server.properties --- on all 3 controllers
 
-
-Steps:
----------
-stop kafka service
-Modify these parameters in /usr/share/kafka/config/server.porperties
-log.cleanup.policy = delete
-log.retention.bytes=250000000
-log.segment.bytes=250000000
-log.retention.hours=24
-Check for zookeeper cluster status, 
-Restart.       Service kafka start ; service alarm-gen restart; service analytics-api restart
+service kafka start --- on all 3 controllers
+service contrail-svc-monitor start --- on all 3 controllers
