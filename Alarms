@@ -1,0 +1,33 @@
+3) Wondering if script does real time capture of alerts as it happens and sends out email?
+
+The UVE stream provides the current operational state of the entities. Basically it would be keep pushing out updates of the entities. There are some filters you can apply for the objects that are of interest. For instance if you would like to get the updates on virtual network 
+
+you can say 
+
+http://10.87.28.178:9081/analytics/uve-stream?table-filt=virtual-netowrk
+
+The IP - 10.87.28.178 is the analytic node IP.  Since MOS is using load-balancer the port number is 9081 otherwise it's 8081 
+
+2) Do I run the script on all three controllers or this has to be run on only one contrail controller and
+
+you can get the UVE-stream from analytic node .  If all the nodes ( config, analytic, db , control ) are in one server, you can use that server IP.  If they are running on different servers, you need to use the analytic node IP.
+
+
+To get the alarm 
+
+http://10.87.28.178:9081/analytics/alarms
+
+
+In addition to url you are referring to , there are some blogs on these topics in open contrail 
+
+1. http://www.opencontrail.org/contrail-analytics-streaming-api/
+ 
+Contrail Analytics Streaming API - OpenContrail is an open ...
+www.opencontrail.org
+Contrail Analytics collects information from the various components of the system, and provides the visibility into flows, logs and UVEs that is needed to operate ...
+2. http://www.opencontrail.org/contrail-alerts/
+ 
+OpenContrail is an open source network virtualization ...
+www.opencontrail.org
+OpenContrail networking provides network virtualization to data center applications using a layered, horizontally scalable software system. We have the abstractions ...
+
