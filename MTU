@@ -1,0 +1,15 @@
+Steps to update the MTU globally:
+
+1. root@node-41:~# curl -i http://192.168.0.2:9696/v2.0/ipams/9ca6dbcd-8ff0-4c07-95fa-0fbbbc465c72.json -X PUT -H "X-Auth-Token:$TOKEN" -H "Content-Type: application/json" -H "Accept: application/json" -H "User-Agent: python-neutronclient" -d '{"ipam": {"mgmt": {"ipam_method":"dhcp", "ipam_dns_method": "virtual-dns-server", "ipam_dns_server": {"tenant_dns_server_address": {"ip_address": []}, "virtual_dns_server_name": "default-domain:vdns"}, "dhcp_option_list": {"dhcp_option": [{"dhcp_option_value": "9000", "dhcp_option_name": "26"}]}, "host_routes": null, "cidr_block": null}}}'
+
+2. If you create any VMs after running this command you should see the interfaces with MTU =9000
+
+3. If you want to change the MTU to a newer value say MTU=8888 then 
+
+root@node-41:~# curl -i http://192.168.0.2:9696/v2.0/ipams/9ca6dbcd-8ff0-4c07-95fa-0fbbbc465c72.json -X PUT -H "X-Auth-Token:$TOKEN" -H "Content-Type: application/json" -H "Accept: application/json" -H "User-Agent: python-neutronclient" -d '{"ipam": {"mgmt": {"ipam_method":"fixed", "ipam_dns_method": "virtual-dns-server", "ipam_dns_server": {"tenant_dns_server_address": {"ip_address": []}, "virtual_dns_server_name": "default-domain:vdns"}, "dhcp_option_list": {"dhcp_option": [{"dhcp_option_value": "8888", "dhcp_option_name": "26"}]}, "host_routes": null, "cidr_block": null}}}'
+
+4. your new VMs will come up with MTU=8888
+
+if you have any questions , please let me know. 
+
+The bug  -  https://bugs.launchpad.net/juniperopenstack/+bug/1610083
