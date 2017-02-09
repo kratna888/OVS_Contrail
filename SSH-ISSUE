@@ -1,0 +1,5 @@
+
+disable checksum on bond0 interface NICs - able to reach VM from outside now and no DNS issue as well. 
+
+similar solution link 
+https://forums.juniper.net/t5/SDN/Troubleshooting-SSH-TCP-traffic-fails-in-Contrail-due-to/ta-p/281874
