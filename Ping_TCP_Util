@@ -1,0 +1,2 @@
+ping -i 0.1 ip <-- every 0.1 seconds 
+tcpdump proto 47 <- MPLSoGRE 
