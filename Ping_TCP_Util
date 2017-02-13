@@ -1,2 +1,4 @@
 ping -i 0.1 ip <-- every 0.1 seconds 
 tcpdump proto 47 <- MPLSoGRE 
+
+http://www.thegeekstuff.com/2009/11/ping-tutorial-13-effective-ping-command-examples/?utm_source=feedburner&utm_medium=feed&utm_campaign=Feed%3A+TheGeekStuff+(The+Geek+Stuff)
