@@ -1,0 +1,3 @@
+
+
+Packets goes from VM to DVS to vrouter ( where the policy and SG ) gets applied ;if there is service chain , next hop changes  . 
