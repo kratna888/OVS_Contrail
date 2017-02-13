@@ -1,0 +1,23 @@
+vMotion - under the HOOD 
+
+1.    Shadow VM created on the destination host.
+2.    Copy each memory page from the source to the destination via the vMotion network.  This is known as preCopy.
+3.    Perform another pass over the VM’s memory, copying any pages that changed during the last preCopy iteration.
+4.    Continue this iterative memory copying until no changed pages (outstanding to be-copied pages) remain.
+5.    Stun the VM on the source and resume it on the destination.
+
+In most circumstances the iterative copy works very well, assuming the host is able to transmit memory pages over the vMotion network faster than the VM can dirty new pages.
+
+However, in the rare event that the VM is dirtying memory pages faster than vMotion can send them it is possible to get into as situation where the preCopy won’t be able to converge.
+ 
+When the preCopy cannot converge, vMotion needs to decide whether to fail the vMotion or to proceed with switchover to the destination anyway.  It makes this decision by estimating the time required to transmit all the remaining outstanding pages.  By default, if this time is below 100 seconds vMotion will proceed with the switchover.  If it will take more than 100 seconds the vMotion will fail  (timeout) with no impact on the VM.
+ 
+In the event the VM passes the 100 second check, VMotion will stun the source and start running on the destination.  While the destination runs, the source will transmit the remaining pages to the destination using the “quick resume” capability introduced with vSphere 4.1. 
+
+A few key takeaways I’d like to emphasize: 
+
+    You should be able to vMotion any workload as long as it is dirtying memory pages at a rate that is less than your vMotion network transmit rate.
+    vMotion will only transfer the VM to the destination if it is certain that it can complete the memory copy.
+    If vMotion cannot complete the memory copy it will fail with no impact to the running VM.
+
+Also, when it comes to troubleshooting vMotion a good place to start is by performing a few vMotions on the host and consulting the vmkernel logs to find your approximate network throughput.  Then look at the VMs memory change rate to identify if the vMotion network throughput is sufficient. 
