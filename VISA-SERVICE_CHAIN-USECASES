@@ -1,0 +1,5 @@
+1.MPLSoUDP - why can't we do VXLAN ? what is the limitation. 
+  we do not comply to the VXLAN draft. We learn the MACs via XMPP
+  VNF has two interfaces , one in red network and the other in green network. The one in green network is part of the service IPAM.
+  For Service IPAM, we do not generate IPs. Kubernetes generate the IPs. So , how do we generate an IP for the green interface of the VNF.
+  Hence VNF has to be a transparent mode 
