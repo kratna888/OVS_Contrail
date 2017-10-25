@@ -1,0 +1,6 @@
+AWK
+
+heat deployment-list | awk '{print $1}'
+heat deployment-list | awk '{print $2}'
+heat deployment-list | awk '{print $2}' | grep b
+for i in `heat deployment-list | awk '{print $2}' `; do heat deployment-delete $i; done
