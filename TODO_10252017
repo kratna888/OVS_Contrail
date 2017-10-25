@@ -1,0 +1,32 @@
+OpenLab setup deploy
+byo openstack - deploy
+Palo Alto VNF run it in scale cluster 
+deploy 4.1 and try security 
+vMX - will the private image 
+
+
+PNF - kratna-mbp:~ kratna$ ssh root@10.84.29.253  Embe1Mpls 
+
+show protocols bgp | grep acce
+
+
+accept-local-nexthop
+
+uniper
+Networks Junos version that includes the feature
+accept-local-nexthop
+
+
+
+is it a virtual firewall ?
+physical firewall  - pre requisite for PNF 
+
+root@b7-mx80# run show version
+Hostname: b7-mx80
+Model: mx80
+Junos: 14.1-20170811_dev_x_141_x55.0
+JUNOS Base OS boot [14.1-20170811_dev_x_141_x55.0]
+JUNOS Base OS Software Suite [14.1-20170811_dev_x_141_x55.0]
+
+
+Note: The Junos feature accept-local-nexthop is available starting with Junos Release 14.1X55. The Contrail service chain with PNF has been tested on Junos 14.1X55. Contact your Juniper Networks customer service representative for more information.
