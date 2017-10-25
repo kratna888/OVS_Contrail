@@ -1,0 +1,3 @@
+TO DEPLOY THE CLUSTER 
+
+openstack overcloud deploy --templates tripleo-heat-templates/ --roles-file contrail-tripleo-heat-templates/environments/contrail/roles_data.yaml -e contrail_templates_8/tripleo-heat-templates/extraconfig/pre_deploy/rhel-registration/environment-rhel-registration.yaml   -e contrail-tripleo-heat-templates/environments/contrail/contrail-services.yaml    -e tripleo-heat-templates/environments/contrail/network-isolation.yaml  -e tripleo-heat-templates/environments/contrail/ips-from-pool-all.yaml   -e tripleo-heat-templates/extraconfig/pre_deploy/rhel-registration/rhel-registration-resource-registry.yaml   -e contrail-tripleo-heat-templates/environments/contrail/contrail-net-dpdk.yaml  -e contrail_version
