@@ -1,3 +1,114 @@
 TO DEPLOY THE CLUSTER 
 
 openstack overcloud deploy --templates tripleo-heat-templates/ --roles-file contrail-tripleo-heat-templates/environments/contrail/roles_data.yaml -e contrail_templates_8/tripleo-heat-templates/extraconfig/pre_deploy/rhel-registration/environment-rhel-registration.yaml   -e contrail-tripleo-heat-templates/environments/contrail/contrail-services.yaml    -e tripleo-heat-templates/environments/contrail/network-isolation.yaml  -e tripleo-heat-templates/environments/contrail/ips-from-pool-all.yaml   -e tripleo-heat-templates/extraconfig/pre_deploy/rhel-registration/rhel-registration-resource-registry.yaml   -e contrail-tripleo-heat-templates/environments/contrail/contrail-net-dpdk.yaml  -e contrail_version
+
+
+Issue 1 - ssh to openstack node was failing. Openstack node has the IP address of 192.0.2.12. it was failing at ssh. 
+
+cd .ssh  > ssh heat-admin@192.0.2.12  would permission denied 
+
+Then when arping was done it showed
+arping -I br-ctlplane 192.0.2.12
+
+Two MACs were responding to arps: 0C:C4:7A:80:97:68 ( openstack node ) , 0C:C4:7A:80:9A:92 ( used for DPDK previously and not part of the current cluster - it was still had 192.0.2.12 IP assigned ) 
+
+[root@undercloud ~]# arping -I br-ctlplane 192.0.2.12
+ARPING 192.0.2.12 from 192.0.2.1 br-ctlplane
+Unicast reply from 192.0.2.12 [0C:C4:7A:80:97:68]  0.802ms
+Unicast reply from 192.0.2.12 [0C:C4:7A:80:9A:92]  0.824ms
+Unicast reply from 192.0.2.12 [0C:C4:7A:80:9A:92]  0.725ms
+Unicast reply from 192.0.2.12 [0C:C4:7A:80:9A:92]  0.709ms
+Unicast reply from 192.0.2.12 [0C:C4:7A:80:9A:92]  0.742ms
+Unicast reply from 192.0.2.12 [0C:C4:7A:80:9A:92]  0.682ms
+Unicast reply from 192.0.2.12 [0C:C4:7A:80:9A:92]  1.537ms
+Unicast reply from 192.0.2.12 [0C:C4:7A:80:9A:92]  0.635ms
+Unicast reply from 192.0.2.12 [0C:C4:7A:80:9A:92]  0.686ms
+Unicast reply from 192.0.2.12 [0C:C4:7A:80:9A:92]  0.881ms
+Unicast reply from 192.0.2.12 [0C:C4:7A:80:9A:92]  0.893ms
+
+
+[stack@undercloud ~]$ openstack stack failures overcloud list
+openstack: 'stack' is not an openstack command. See 'openstack --help'.
+Did you mean one of these?
+  stack abandon
+  stack adopt
+  stack cancel
+  stack check
+  stack create
+  stack delete
+  stack environment show
+  stack event list
+  stack event show
+  stack failures list
+  stack file list
+  stack hook clear
+  stack hook poll
+  stack list
+  stack output list
+  stack output show
+  stack resource list
+  stack resource mark unhealthy
+  stack resource metadata
+  stack resource show
+  stack resource signal
+  stack resume
+  stack show
+  stack snapshot create
+  stack snapshot delete
+  stack snapshot list
+  stack snapshot restore
+  stack snapshot show
+  stack suspend
+  stack template show
+  stack update
+  task execution list
+  task execution published show
+  task execution rerun
+  task execution result show
+  task execution show
+[stack@undercloud ~]$ openstack stack failures list overcloud
+overcloud.ControllerSshKnownHostsDeployment:
+  resource_type: OS::Heat::StructuredDeployments
+  physical_resource_id: 4e5ac070-2a41-4a37-8002-b3deb6e47c49
+  status: CREATE_FAILED
+  status_reason: |
+    CREATE aborted
+overcloud.AllNodesDeploySteps.ControllerDeployment_Step1:
+  resource_type: OS::Heat::StructuredDeploymentGroup
+  physical_resource_id: e900fa22-46dd-4e5d-95bf-91942c393f33
+  status: CREATE_FAILED
+  status_reason: |
+    CREATE aborted
+overcloud.AllNodesDeploySteps.ComputeDeployment_Step1.0:
+  resource_type: OS::Heat::StructuredDeployment
+  physical_resource_id: 6ad72508-ba8b-4ac8-b947-fbe27e407fa7
+  status: CREATE_FAILED
+  status_reason: |
+    Error: resources[0]: Deployment to server failed: deploy_status_code : Deployment exited with non-zero status code: 1
+  deploy_stdout: |
+
+  deploy_stderr: |
+    exception: connect failed
+    Error: Could not find data item contrail::vrouter::analytics_node_ips in any Hiera data file and no default supplied at /etc/puppet/modules/tripleo/manifests/network/contrail/vrouter.pp:166 on node overcloud-novacompute-0.localdomain
+    Error: Could not find data item contrail::vrouter::analytics_node_ips in any Hiera data file and no default supplied at /etc/puppet/modules/tripleo/manifests/network/contrail/vrouter.pp:166 on node overcloud-novacompute-0.localdomain
+overcloud.AllNodesDeploySteps.ContrailAnalyticsDeployment_Step1:
+  resource_type: OS::Heat::StructuredDeploymentGroup
+  physical_resource_id: 73e7ebd5-738f-4d73-ba80-056e06a82bbc
+  status: CREATE_FAILED
+  status_reason: |
+    CREATE aborted
+overcloud.AllNodesDeploySteps.ContrailControllerDeployment_Step1.0:
+  resource_type: OS::Heat::StructuredDeployment
+  physical_resource_id: bd2f60ac-4ed4-468a-95e9-2fca756dc0be
+  status: CREATE_FAILED
+  status_reason: |
+    Error: resources[0]: Deployment to server failed: deploy_status_code : Deployment exited with non-zero status code: 1
+  deploy_stdout: |
+
+  deploy_stderr: |
+    exception: connect failed
+    Warning: This method is deprecated, please use the stdlib validate_legacy function, with Stdlib::Compat::Ip_Address. There is further documentation for validate_legacy function in the README.
+       (at /etc/puppet/modules/stdlib/lib/puppet/functions/deprecation.rb:19:in `deprecation')
+    Error: Invalid parameter auth_version on Class[Contrail::Webui] at /etc/puppet/modules/tripleo/manifests/network/contrail/webui.pp:132 on node overcloud-contrailcontroller-0.localdomain
+    Error: Invalid parameter auth_version on Class[Contrail::Webui] at /etc/puppet/modules/tripleo/manifests/network/contrail/webui.pp:132 on node overcloud-contrailcontroller-0.localdomain
+[stack@undercloud ~]$
