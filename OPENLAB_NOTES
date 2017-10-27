@@ -112,3 +112,70 @@ overcloud.AllNodesDeploySteps.ContrailControllerDeployment_Step1.0:
     Error: Invalid parameter auth_version on Class[Contrail::Webui] at /etc/puppet/modules/tripleo/manifests/network/contrail/webui.pp:132 on node overcloud-contrailcontroller-0.localdomain
     Error: Invalid parameter auth_version on Class[Contrail::Webui] at /etc/puppet/modules/tripleo/manifests/network/contrail/webui.pp:132 on node overcloud-contrailcontroller-0.localdomain
 [stack@undercloud ~]$
+
+
+
+
+
+
+
+To compare the puppet modules 
+
+rsync -av root@172.16.71.200:/home/stack/usr/share/openstack-puppet/modules/contrail my-contrail
+
+
+
+
+
+[stack@undercloud ~]$ openstack stack failures list overcloud
+overcloud.AllNodesDeploySteps.ControllerDeployment_Step1:
+  resource_type: OS::Heat::StructuredDeploymentGroup
+  physical_resource_id: dea4ae65-49cc-4ba6-bf07-513c4e486270
+  status: CREATE_FAILED
+  status_reason: |
+    CREATE aborted
+overcloud.AllNodesDeploySteps.ContrailAnalyticsDatabaseDeployment_Step1:
+  resource_type: OS::Heat::StructuredDeploymentGroup
+  physical_resource_id: c1186cbe-94c2-4ecd-8e9f-8c536a15bf47
+  status: CREATE_FAILED
+  status_reason: |
+    CREATE aborted
+overcloud.AllNodesDeploySteps.ContrailAnalyticsDeployment_Step1:
+  resource_type: OS::Heat::StructuredDeploymentGroup
+  physical_resource_id: 13dcd7e5-48dc-4667-af79-e9359fe57c6c
+  status: CREATE_FAILED
+  status_reason: |
+    CREATE aborted
+overcloud.AllNodesDeploySteps.ContrailControllerDeployment_Step1.0:
+  resource_type: OS::Heat::StructuredDeployment
+  physical_resource_id: f8473667-4d82-48d7-ac68-3f676a37da1b
+  status: CREATE_FAILED
+  status_reason: |
+    Error: resources[0]: Deployment to server failed: deploy_status_code : Deployment exited with non-zero status code: 6
+  deploy_stdout: |
+    ...
+    Notice: /Stage[main]/Tripleo::Profile::Base::Kernel/Sysctl::Value[net.ipv4.conf.all.arp_accept]/Sysctl_runtime[net.ipv4.conf.all.arp_accept]/val: val changed '0' to '1'
+    Notice: /Stage[main]/Tripleo::Profile::Base::Kernel/Sysctl::Value[net.nf_conntrack_max]/Sysctl[net.nf_conntrack_max]/ensure: created
+    Notice: /Stage[main]/Tripleo::Profile::Base::Kernel/Sysctl::Value[net.nf_conntrack_max]/Sysctl_runtime[net.nf_conntrack_max]/val: val changed '262144' to '500000'
+    Notice: /Stage[main]/Tripleo::Profile::Base::Kernel/Sysctl::Value[net.ipv6.conf.default.autoconf]/Sysctl_runtime[net.ipv6.conf.default.autoconf]/val: val changed '1' to '0'
+    Notice: /Stage[main]/Tripleo::Profile::Base::Kernel/Sysctl::Value[kernel.pid_max]/Sysctl[kernel.pid_max]/ensure: created
+    Notice: /Stage[main]/Tripleo::Profile::Base::Kernel/Sysctl::Value[kernel.pid_max]/Sysctl_runtime[kernel.pid_max]/val: val changed '57344' to '1048576'
+    Notice: /Stage[main]/Tripleo::Profile::Base::Kernel/Sysctl::Value[net.ipv4.tcp_keepalive_intvl]/Sysctl_runtime[net.ipv4.tcp_keepalive_intvl]/val: val changed '75' to '1'
+    Notice: /Stage[main]/Tripleo::Profile::Base::Kernel/Sysctl::Value[net.ipv6.conf.all.autoconf]/Sysctl_runtime[net.ipv6.conf.all.autoconf]/val: val changed '1' to '0'
+    Notice: /Stage[main]/Timezone/File[/etc/localtime]/ensure: defined content as '{md5}c79354b8dbee09e62bbc3fb544853283'
+    Notice: Finished catalog run in 2.84 seconds
+    (truncated, view all with --long)
+  deploy_stderr: |
+    ...
+            compromise:
+
+                yum-config-manager --save --setopt=Contrail.skip_if_unavailable=true
+
+    failure: repodata/repomd.xml from Contrail: [Errno 256] No more mirrors to try.
+    http://192.0.2.1/contrail/repodata/repomd.xml: [Errno 14] HTTP Error 404 - Not Found
+    Warning: /Stage[main]/Contrail::Webui::Config/File[/etc/contrail/contrail-webui-userauth.js]: Skipping because of failed dependencies
+    Warning: /Stage[main]/Contrail::Webui::Config/File[/etc/contrail/config.global.js]: Skipping because of failed dependencies
+    Warning: /Stage[main]/Contrail::Webui::Service/Service[redis]: Skipping because of failed dependencies
+    Warning: /Stage[main]/Contrail::Webui::Service/Service[supervisor-webui]: Skipping because of failed dependencies
+    (truncated, view all with --long)
+[stack@undercloud ~]$
