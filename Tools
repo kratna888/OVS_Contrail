@@ -1,1 +1,7 @@
 stack@ospd-director ~]$ for i in `nova list | awk '{print $12}' | grep ctlplan | cut -d'=' -f2`; do echo $i; ssh heat-admin@$i sudo contrail-status ; read; done
+
+for i in `nova list | awk '{print $12}' | grep ctlplan | cut -d'=' -f2`; do ssh heat-admin sudo "grep -i error /var/log/messages"; done
+
+for i in `nova list | awk '{print $12}' | grep ctlplan | cut -d'=' -f2`; do echo $i; ssh heat-admin@$i sudo "grep -i error /var/log/messages"; read; done
+
+for i in `nova list | awk '{print $12}' | grep ctlplan | cut -d'=' -f2`; do echo $i; ssh heat-admin@$i sudo "grep -i fail /var/log/messages"; done
