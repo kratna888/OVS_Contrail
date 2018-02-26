@@ -1,0 +1,1535 @@
+## Last changed: 2018-02-14 00:48:31 UTC
+version 17.3R1.10;
+groups {
+    lo0;
+    /* Contrail Generated Group Config */
+    __contrail__ {
+        interfaces {
+            /* Interfaces Configuration */
+            lo0 {
+                /* Router Loopback Interface */
+                unit 0 {
+                    family inet {
+                        address 10.87.29.8/32 {
+                            primary;
+                            preferred;
+                        }
+                    }
+                }
+            }
+        }
+        forwarding-options {
+            family inet {
+                filter {
+                    input _contrail_redirect-to-public-vrfs-inet4;
+                }
+            }
+        }
+        routing-options {
+            static {
+                route 10.87.29.80/28 discard;
+            }
+            /* Global Routing Options */
+            router-id 10.87.29.8;
+            route-distinguisher-id 10.87.29.8;
+            autonomous-system 64512;
+            dynamic-tunnels {
+                _contrail_asn-64512 {
+                    source-address 10.87.29.8;
+                    udp;
+                    destination-networks {
+                        /* IP Fabric Subnet */
+                        10.88.0.0/24;
+                        /* BGP Router : mx80.cosmos */
+                        10.87.29.8/32;
+                    }
+                }
+            }
+        }
+        protocols {
+            /* Protocols Configuration */
+            bgp {
+                /* BGP Router: mx80.cosmos, UUID: ff95644a-1554-402a-888b-a31340f37f5f */
+                group _contrail_asn-64512 {
+                    type internal;
+                    local-address 10.87.29.8;
+                    hold-time 90;
+                    import getudp;
+                    family inet-vpn {
+                        unicast;
+                    }
+                    family inet6-vpn {
+                        unicast;
+                    }
+                    family evpn {
+                        signaling;
+                    }
+                    family route-target;
+                    export [ _contrail_ibgp_export_policy addudp ];
+                    vpn-apply-export;
+                    /* BGP Router: overcloud-contrailcontroller-2, UUID: 41e13009-0bcb-4f52-bf85-c5638937000e */
+                    neighbor 10.88.0.42 {
+                        peer-as 64512;
+                    }
+                    /* BGP Router: overcloud-contrailcontroller-1, UUID: 148b02cc-d8b5-4f98-9102-982aa948c39f */
+                    neighbor 10.88.0.41 {
+                        peer-as 64512;
+                    }
+                    /* BGP Router: overcloud-contrailcontroller-0, UUID: 6d47c6c3-a20e-4d4c-84b7-3a2ec6109223 */
+                    neighbor 10.88.0.40 {
+                        peer-as 64512;
+                    }
+                }
+            }
+        }
+        policy-options {
+            /* iBGP Export Policy */
+            policy-statement _contrail_ibgp_export_policy {
+                term inet-vpn {
+                    from family inet-vpn;
+                    then {
+                        next-hop self;
+                    }
+                }
+                term inet6-vpn {
+                    from family inet6-vpn;
+                    then {
+                        next-hop self;
+                    }
+                }
+            }
+            policy-statement addudp {
+                term 1 {
+                    from protocol direct;
+                }
+                then {
+                    community add udpcommunity;
+                    accept;
+                }
+            }
+            policy-statement getudp {
+                inactive: term 1 {
+                    from community udpcommunity;
+                }
+                term 2 {
+                    from family evpn;
+                    then {
+                        community delete udpcommunity;
+                    }
+                }
+                then accept;
+            }
+            policy-statement _contrail_PUBLIC_-l3-21-export {
+                term t1 {
+                    then {
+                        community add _contrail_target_64512_8000020;
+                        community add udpcommunity;
+                        accept;
+                    }
+                }
+            }
+            policy-statement _contrail_PUBLIC_-l3-21-import {
+                term t1 {
+                    from community [ _contrail_target_64512_8000020 udpcommunity ];
+                    then accept;
+                }
+                then reject;
+            }
+            policy-statement _contrail_LEFT-l3-21-export {
+                term t1 {
+                    then {
+                        community add _contrail_target_64512_8000010;
+                        accept;
+                    }
+                }
+            }
+            policy-statement _contrail_LEFT-l3-21-import {
+                term t1 {
+                    from community _contrail_target_64512_8000010;
+                    then accept;
+                }
+                then reject;
+            }
+            policy-statement _contrail_AWS-l3-export {
+                term t1 {
+                    then {
+                        community add _contrail_target_64512_8000050;
+                        accept;
+                    }
+                }
+            }
+            policy-statement _contrail_AWS-l3-import {
+                term t1 {
+                    from community _contrail_target_64512_8000050;
+                    then accept;
+                }
+                then reject;
+            }
+            policy-statement _contrail_AZURE-l3-export {
+                term t1 {
+                    then {
+                        community add _contrail_target_64512_8000060;
+                        accept;
+                    }
+                }
+            }
+            policy-statement _contrail_AZURE-l3-import {
+                term t1 {
+                    from community _contrail_target_64512_8000060;
+                    then accept;
+                }
+                then reject;
+            }
+            policy-statement _contrail_GCP-l3-export {
+                term t1 {
+                    then {
+                        community add _contrail_target_64512_8000001;
+                        accept;
+                    }
+                }
+            }
+            policy-statement _contrail_GCP-l3-import {
+                term t1 {
+                    from community _contrail_target_64512_8000001;
+                    then accept;
+                }
+                then reject;
+            }
+            policy-statement _contrail_OVERLAP_AWS-l3-export {
+                term t1 {
+                    then {
+                        community add _contrail_target_64512_8000004;
+                        accept;
+                    }
+                }
+            }
+            policy-statement _contrail_OVERLAP_AWS-l3-import {
+                term t1 {
+                    from community _contrail_target_64512_8000004;
+                    then accept;
+                }
+                then reject;
+            }
+            policy-statement _contrail_OVERLAP_AZURE-l3-export {
+                term t1 {
+                    then {
+                        community add _contrail_target_64512_8000044;
+                        accept;
+                    }
+                }
+            }
+            policy-statement _contrail_OVERLAP_AZURE-l3-import {
+                term t1 {
+                    from community _contrail_target_64512_8000044;
+                    then accept;
+                }
+                then reject;
+            }
+            policy-statement _contrail_OVERLAP_LEFT-l3-export {
+                term t1 {
+                    then {
+                        community add _contrail_target_64512_8000003;
+                        accept;
+                    }
+                }
+            }
+            policy-statement _contrail_OVERLAP_LEFT-l3-import {
+                term t1 {
+                    from community _contrail_target_64512_8000003;
+                    then accept;
+                }
+                then reject;
+            }
+            policy-statement _contrail_OVERLAP_RIGHT-l3-export {
+                term t1 {
+                    then {
+                        community add _contrail_target_64512_8000030;
+                        accept;
+                    }
+                }
+            }
+            policy-statement _contrail_OVERLAP_RIGHT-l3-import {
+                term t1 {
+                    from community _contrail_target_64512_8000030;
+                    then accept;
+                }
+                then reject;
+            }
+            policy-statement _contrail_GCP-USECASE-5n6-LEFT-l3-export {
+                term t1 {
+                    then {
+                        community add _contrail_target_64512_8000005;
+                        accept;
+                    }
+                }
+            }
+            policy-statement _contrail_GCP-USECASE-5n6-LEFT-l3-import {
+                term t1 {
+                    from community _contrail_target_64512_8000005;
+                    then accept;
+                }
+                then reject;
+            }
+            policy-statement _contrail_GCP-USECASE-5n6-RIGHT-l3-export {
+                term t1 {
+                    then {
+                        community add _contrail_target_64512_8000056;
+                        accept;
+                    }
+                }
+            }
+            policy-statement _contrail_GCP-USECASE-5n6-RIGHT-l3-import {
+                term t1 {
+                    from community _contrail_target_64512_8000056;
+                    then accept;
+                }
+                then reject;
+            }
+            policy-statement _contrail_PUBLIC-l3-export {
+                term t1 {
+                    then {
+                        community add _contrail_target_64512_8000004;
+                        accept;
+                    }
+                }
+            }
+            policy-statement _contrail_PUBLIC-l3-import {
+                term t1 {
+                    from community _contrail_target_64512_8000004;
+                    then accept;
+                }
+                then reject;
+            }
+            policy-statement _contrail_AWS-USECASE2-l2-10-import {
+                term t1 {
+                    from community _contrail_target_64512_8000020;
+                    then accept;
+                }
+                then reject;
+            }
+            policy-statement _contrail_AWS-USECASE2-l2-10-export {
+                term t1 {
+                    then {
+                        community add _contrail_target_64512_8000020;
+                        accept;
+                    }
+                }
+            }
+            policy-statement dropUDP {
+                term 1 {
+                    from family evpn;
+                }
+            }
+            policy-statement _contrail-USECASE3-l2-LEFT-import {
+                term t1 {
+                    from community _contrail_target_64512_8000003;
+                    then accept;
+                }
+                then reject;
+            }
+            policy-statement _contrail-USECASE3-l2-LEFT-export {
+                term t1 {
+                    then {
+                        community add _contrail_target_64512_8000003;
+                        accept;
+                    }
+                }
+            }
+            policy-statement _contrail-USECASE3-l2-RIGHT-import {
+                term t1 {
+                    from community _contrail_target_64512_8000030;
+                    then accept;
+                }
+                then reject;
+            }
+            policy-statement _contrail-USECASE3-l2-RIGHT-export {
+                term t1 {
+                    then {
+                        community add _contrail_target_64512_8000030;
+                        accept;
+                    }
+                }
+            }
+            policy-statement _contrail_USECASE_LEFT-l3-import {
+                term t1 {
+                    from community _contrail_target_64512_8000103;
+                    then accept;
+                }
+                then reject;
+            }
+            policy-statement _contrail_USECASE_LEFT-l3-export {
+                term t1 {
+                    then {
+                        community add _contrail_target_64512_8000103;
+                        accept;
+                    }
+                }
+            }
+            policy-statement _contrail_USECASE_RIGHT-l3-import {
+                term t1 {
+                    from community _contrail_target_64512_8000203;
+                    then accept;
+                }
+                then reject;
+            }
+            policy-statement _contrail_USECASE_RIGHT-l3-export {
+                term t1 {
+                    then {
+                        community add _contrail_target_64512_8000203;
+                        accept;
+                    }
+                }
+            }
+            policy-statement _contrail_USECASE_LEFT3-l3-import {
+                term t1 {
+                    from community _contrail_target_64512_8000103;
+                    then accept;
+                }
+                then reject;
+            }
+            policy-statement _contrail_USECASE_LEFT3-l3-export {
+                term t1 {
+                    then {
+                        community add _contrail_target_64512_8000103;
+                        accept;
+                    }
+                }
+            }
+            policy-statement _contrail_USECASE3_LEFT-l3-import {
+                term t1 {
+                    from community _contrail_target_64512_8000103;
+                    then accept;
+                }
+                then reject;
+            }
+            policy-statement _contrail_USECASE3_LEFT-l3-export {
+                term t1 {
+                    then {
+                        community add _contrail_target_64512_8000103;
+                        accept;
+                    }
+                }
+            }
+            community udpcommunity members 0x030c:64512:13;
+            community _contrail_target_64512_8000020 members target:64512:8000020;
+            community _contrail_target_64512_8000010 members target:64512:8000010;
+            community _contrail_target_64512_8000050 members target:64512:8000050;
+            community _contrail_target_64512_8000060 members target:64512:8000060;
+            community _contrail_target_64512_8000001 members target:64512:8000001;
+            community _contrail_target_64512_8000004 members target:64512:8000004;
+            community _contrail_target_64512_8000044 members target:64512:8000044;
+            community _contrail_target_64512_8000003 members target:64512:8000003;
+            community _contrail_target_64512_8000030 members target:64512:8000030;
+            community _contrail_target_64512_8000005 members target:64512:8000005;
+            community _contrail_target_64512_8000056 members target:64512:8000056;
+            community _contrail_target_64512_8000103 members target:64512:8000103;
+            community _contrail_target_64512_8000203 members target:64512:8000203;
+        }
+        firewall {
+            family inet {
+                filter _contrail_redirect-to-public-vrfs-inet4 {
+                    term default-term {
+                        then accept;
+                    }
+                    term term-_contrail_AWS-l3 {
+                        from {
+                            destination-address {
+                                192.168.50.0/24;
+                            }
+                        }
+                        then {
+                            routing-instance _contrail_AWS_-l3;
+                        }
+                    }
+                    term term-_contrail_AZURE-l3 {
+                        from {
+                            destination-address {
+                                192.168.60.0/24;
+                            }
+                        }
+                        then {
+                            routing-instance _contrail_AZURE_-l3;
+                        }
+                    }
+                    term term-_contrail_GCP-l3 {
+                        from {
+                            destination-address {
+                                192.168.10.0/28;
+                                192.168.1.0/28;
+                            }
+                        }
+                        then {
+                            routing-instance _contrail_GCP-l3;
+                        }
+                    }
+                    term term-_contrail_OVERLAP_AWS-l3 {
+                        from {
+                            destination-address {
+                                192.168.41.0/24;
+                            }
+                        }
+                        then {
+                            routing-instance _contrail_OVERLAP_AWS-l3;
+                        }
+                    }
+                    term term-_contrail_OVERLAP_AZURE-l3 {
+                        from {
+                            destination-address {
+                                192.168.41.0/24;
+                            }
+                        }
+                        then {
+                            routing-instance _contrail_OVERLAP_AZURE-l3;
+                        }
+                    }
+                    term term-_contrail_OVERLAP_LEFT-l3 {
+                        from {
+                            destination-address {
+                                192.168.30.0/24;
+                            }
+                        }
+                        then {
+                            routing-instance _contrail_OVERLAP_LEFT-l3;
+                        }
+                    }
+                    term term-_contrail_OVERLAP_RIGHT-l3 {
+                        from {
+                            destination-address {
+                                192.168.30.0/24;
+                            }
+                        }
+                        then {
+                            routing-instance _contrail_OVERLAP_RIGHT-l3;
+                        }
+                    }
+                    term term-_contrail_GCP-USECASE-5n6-LEFT-l3 {
+                        from {
+                            destination-address {
+                                192.168.56.0/24;
+                            }
+                        }
+                        then {
+                            routing-instance _contrail_GCP-USECASE-5n6-LEFT-l3;
+                        }
+                    }
+                    term term-_contrail_GCP-USECASE-5n6-RIGHT-l3 {
+                        from {
+                            destination-address {
+                                192.56.56.0/24;
+                            }
+                        }
+                        then {
+                            routing-instance _contrail_GCP-USECASE-5n6-RIGHT-l3;
+                        }
+                    }
+                    term term-_contrail_PUBLIC-l3 {
+                        from {
+                            destination-address {
+                                10.87.29.80/28;
+                            }
+                        }
+                        then {
+                            routing-instance _contrail_PUBLIC-l3;
+                        }
+                    }
+                    term term-_contrail_USECASE3_LEFT-l3 {
+                        from {
+                            destination-address {
+                                192.168.30.0/24;
+                            }
+                        }
+                        then {
+                            routing-instance _contrail_USECASE_LEFT3-l3;
+                        }
+                    }
+                    term term-_contrail_AWS-l3-1 {
+                        from {
+                            destination-address {
+                                192.6.0.1/32;
+                                192.5.50.0/24;
+                            }
+                        }
+                        then {
+                            routing-instance _contrail_AWS_-l3;
+                        }
+                    }
+                    term term-_contrail_AWS-l3-2 {
+                        from {
+                            destination-address {
+                                192.5.50.0/24;
+                            }
+                        }
+                        then {
+                            routing-instance _contrail_AWS_-l3;
+                        }
+                    }
+                    term term-_contrail_AZURE-l3-1 {
+                        from {
+                            destination-address {
+                                192.5.50.0/25;
+                                192.5.50.0/24;
+                            }
+                        }
+                        then {
+                            routing-instance _contrail_AZURE_-l3;
+                        }
+                    }
+                }
+            }
+        }
+        routing-instances {
+            _contrail_LEFT-l3-21 {
+                instance-type vrf;
+                interface lo0.10;
+                vrf-import _contrail_LEFT-l3-21-import;
+                vrf-export _contrail_LEFT-l3-21-export;
+                vrf-table-label;
+                routing-options {
+                    static {
+                        route 0.0.0.0/0 next-table inet.0;
+                        route 192.168.10.0/24 discard;
+                    }
+                    auto-export {
+                        family inet {
+                            unicast;
+                        }
+                    }
+                }
+            }
+            _contrail_AWS-l3-21 {
+                instance-type vrf;
+                interface lo0.50;
+                interface irb.50;
+                vrf-import _contrail_AWS-l3-import;
+                vrf-export _contrail_AWS-l3-export;
+                vrf-table-label;
+                routing-options {
+                    static {
+                        route 0.0.0.0/0 next-table inet.0;
+                        route 192.168.50.0/24 discard;
+                    }
+                    auto-export {
+                        family inet {
+                            unicast;
+                        }
+                    }
+                }
+            }
+            _contrail_AZURE-l3-21 {
+                instance-type vrf;
+                interface lo0.60;
+                interface irb.60;
+                vrf-import _contrail_AZURE-l3-import;
+                vrf-export _contrail_AZURE-l3-export;
+                vrf-table-label;
+                routing-options {
+                    static {
+                        route 0.0.0.0/0 next-table inet.0;
+                        route 192.168.60.0/24 discard;
+                    }
+                    auto-export {
+                        family inet {
+                            unicast;
+                        }
+                    }
+                }
+            }
+            _contrail_AWS-LEFT-l2-10 {
+                instance-type evpn;
+                vlan-id 50;
+                interface ge-1/1/5.0;
+                interface ge-1/1/6.0;
+                routing-interface irb.50;
+                route-distinguisher 192.168.50.1:50;
+                vrf-target target:64512:8000050;
+                protocols {
+                    evpn;
+                }
+            }
+            _contrail_AZURE-RIGHT-l2-11 {
+                instance-type evpn;
+                vlan-id 60;
+                interface ge-1/3/9.0;
+                interface ge-1/1/4.0;
+                routing-interface irb.60;
+                route-distinguisher 192.168.60.1:60;
+                vrf-target target:64512:8000060;
+                protocols {
+                    evpn;
+                }
+            }
+            _contrail_GCP-l3 {
+                instance-type vrf;
+                interface lo0.1;
+                interface ge-1/1/5.1;
+                vrf-import _contrail_GCP-l3-import;
+                vrf-export _contrail_GCP-l3-export;
+                vrf-table-label;
+                routing-options {
+                    static {
+                        route 0.0.0.0/0 next-table inet.0;
+                        route 192.168.1.0/24 discard;
+                    }
+                    auto-export {
+                        family inet {
+                            unicast;
+                        }
+                    }
+                }
+            }
+            inactive: _contrail_OVERLAP_LEFT-l3 {
+                instance-type vrf;
+                interface lo0.3;
+                interface ge-1/1/5.3;
+                vrf-import _contrail_OVERLAP_LEFT-l3-import;
+                vrf-export _contrail_OVERLAP_LEFT-l3-export;
+                vrf-table-label;
+                routing-options {
+                    static {
+                        route 0.0.0.0/0 next-table inet.0;
+                        route 192.168.30.0/24 discard;
+                    }
+                    auto-export {
+                        family inet {
+                            unicast;
+                        }
+                    }
+                }
+            }
+            inactive: _contrail_OVERLAP_RIGHT-l3 {
+                instance-type vrf;
+                interface lo0.30;
+                interface ge-1/1/4.30;
+                vrf-import _contrail_OVERLAP_RIGHT-l3-import;
+                vrf-export _contrail_OVERLAP_RIGHT-l3-export;
+                vrf-table-label;
+                routing-options {
+                    static {
+                        route 0.0.0.0/0 next-table inet.0;
+                        route 192.168.30.0/24 discard;
+                    }
+                    auto-export {
+                        family inet {
+                            unicast;
+                        }
+                    }
+                }
+            }
+            _contrail_GCP-USECASE-5n6-LEFT-l3 {
+                instance-type vrf;
+                interface lo0.5;
+                interface ge-1/1/5.5;
+                vrf-import _contrail_GCP-USECASE-5n6-LEFT-l3-import;
+                vrf-export _contrail_GCP-USECASE-5n6-LEFT-l3-export;
+                vrf-table-label;
+                routing-options {
+                    static {
+                        route 0.0.0.0/0 next-table inet.0;
+                        route 192.168.56.0/24 discard;
+                    }
+                    auto-export {
+                        family inet {
+                            unicast;
+                        }
+                    }
+                }
+            }
+            _contrail_GCP-USECASE-5n6-RIGHT-l3 {
+                instance-type vrf;
+                interface lo0.56;
+                interface ge-1/1/4.56;
+                interface ge-1/3/9.56;
+                vrf-import _contrail_GCP-USECASE-5n6-RIGHT-l3-import;
+                vrf-export _contrail_GCP-USECASE-5n6-RIGHT-l3-export;
+                vrf-table-label;
+                routing-options {
+                    static {
+                        route 0.0.0.0/0 next-table inet.0;
+                        route 192.56.56.0/24 discard;
+                    }
+                    auto-export {
+                        family inet {
+                            unicast;
+                        }
+                    }
+                }
+            }
+            _contrail_PUBLIC-l3 {
+                instance-type vrf;
+                interface lo0.4;
+                interface lt-0/0/0.10;
+                vrf-import _contrail_PUBLIC-l3-import;
+                vrf-export _contrail_PUBLIC-l3-export;
+                vrf-table-label;
+                routing-options {
+                    static {
+                        route 0.0.0.0/0 next-table inet.0;
+                        route 10.87.29.80/28 discard;
+                    }
+                    auto-export {
+                        family inet {
+                            unicast;
+                        }
+                    }
+                }
+            }
+            _contrail_AWS-USECASE2-l2-10 {
+                vtep-source-interface lo0.0;
+                instance-type virtual-switch;
+                route-distinguisher 192.168.20.1:20;
+                vrf-import _contrail_AWS-USECASE2-l2-10-import;
+                vrf-export _contrail_AWS-USECASE2-l2-10-export;
+                vrf-target target:64512:8000020;
+                protocols {
+                    evpn {
+                        encapsulation vxlan;
+                        extended-vni-list all;
+                    }
+                }
+                bridge-domains {
+                    bd-20 {
+                        vlan-id 20;
+                        interface ge-1/1/7.0;
+                        routing-interface irb.20;
+                        vxlan {
+                            vni 7;
+                        }
+                    }
+                }
+            }
+            _contrail-USECASE3-l2-LEFT {
+                vtep-source-interface lo0.0;
+                instance-type virtual-switch;
+                route-distinguisher 192.168.3.1:3;
+                vrf-import _contrail-USECASE3-l2-LEFT-import;
+                vrf-export _contrail-USECASE3-l2-LEFT-export;
+                vrf-target target:64512:8000003;
+                protocols {
+                    evpn {
+                        encapsulation vxlan;
+                        extended-vni-list all;
+                    }
+                }
+                bridge-domains {
+                    bd-3 {
+                        vlan-id 3;
+                        interface ge-1/1/7.3;
+                        routing-interface irb.3;
+                        vxlan {
+                            vni 3;
+                        }
+                    }
+                }
+            }
+            _contrail-USECASE3-l2-RIGHT {
+                vtep-source-interface lo0.0;
+                instance-type virtual-switch;
+                route-distinguisher 192.168.30.1:30;
+                vrf-import _contrail-USECASE3-l2-RIGHT-import;
+                vrf-export _contrail-USECASE3-l2-RIGHT-export;
+                vrf-target target:64512:8000030;
+                protocols {
+                    evpn {
+                        encapsulation vxlan;
+                        extended-vni-list all;
+                    }
+                }
+                bridge-domains {
+                    bd-30 {
+                        vlan-id 30;
+                        interface ge-1/1/9.30;
+                        routing-interface irb.30;
+                        vxlan {
+                            vni 30;
+                        }
+                    }
+                }
+            }
+            _contrail_USECASE_RIGHT-l3 {
+                instance-type vrf;
+                interface lo0.203;
+                interface ge-1/1/4.203;
+                vrf-import _contrail_USECASE_RIGHT-l3-import;
+                vrf-export _contrail_USECASE_RIGHT-l3-export;
+                vrf-table-label;
+                routing-options {
+                    static {
+                        route 0.0.0.0/0 next-table inet.0;
+                        route 192.168.30.0/24 discard;
+                        route 192.168.30.253/32 next-hop 192.168.30.203;
+                    }
+                    auto-export {
+                        family inet {
+                            unicast;
+                        }
+                    }
+                }
+            }
+            _contrail_USECASE3_LEFT-l3 {
+                instance-type vrf;
+                interface lo0.103;
+                interface ge-1/1/5.103;
+                vrf-import _contrail_USECASE3_LEFT-l3-import;
+                vrf-export _contrail_USECASE3_LEFT-l3-export;
+                vrf-table-label;
+                routing-options {
+                    static {
+                        route 0.0.0.0/0 next-table inet.0;
+                        route 192.168.30.153/32 next-hop 192.168.31.1;
+                    }
+                    auto-export {
+                        family inet {
+                            unicast;
+                        }
+                    }
+                }
+            }
+            _contrail_USECASE3_RIGHT-l3 {
+                routing-options {
+                    static {
+                        route 192.168.30.253/32 next-hop 192.168.30.203;
+                    }
+                }
+            }
+        }
+    }
+}
+apply-groups __contrail__;
+system {
+    host-name mx80.cosmos;
+    root-authentication {
+        encrypted-password "$1$dP8U81Mu$urkWepdsewTlkMeWnI0er0"; ## SECRET-DATA
+    }
+    name-server {
+        172.29.131.60;
+    }
+    services {
+        ftp;
+        ssh {
+            root-login allow;
+        }
+        telnet;
+        netconf {
+            ssh;
+            traceoptions {
+                file nc;
+                flag all;
+            }
+        }
+    }
+    syslog {
+        user * {
+            any emergency;
+        }
+        host 172.16.150.2 {
+            any any;
+            port 19876;
+        }
+        file messages {
+            any notice;
+            authorization info;
+        }
+        file interactive-commands {
+            interactive-commands any;
+        }
+    }
+    ntp {
+        server 172.17.28.5;
+        server 199.223.248.99;
+        server 66.129.255.62 prefer;
+        server 172.28.16.17;
+    }
+}
+chassis {
+    aggregated-devices {
+        ethernet {
+            device-count 2;
+        }
+    }
+    fpc 0 {
+        pic 0 {
+            tunnel-services;
+        }
+    }
+    fpc 1 {
+        pic 0 {
+            tunnel-services;
+        }
+    }
+    tfeb {
+        slot 0 {
+            sampling-instance sample-ins1;
+        }
+    }
+    network-services enhanced-ip;
+}
+services {
+    flow-monitoring {
+        version-ipfix {
+            template t1 {
+                flow-active-timeout 30;
+                flow-inactive-timeout 30;
+                template-refresh-rate {
+                    packets 10;
+                }
+                ipv4-template;
+            }
+        }
+    }
+}
+interfaces {
+    lt-0/0/0 {
+        unit 1 {
+            encapsulation ethernet;
+            peer-unit 2;
+            family inet {
+                address 15.15.15.1/24;
+            }
+        }
+        unit 2 {
+            encapsulation ethernet;
+            peer-unit 1;
+            family inet {
+                address 15.15.15.2/24;
+            }
+        }
+        unit 10 {
+            encapsulation ethernet;
+            peer-unit 11;
+            family inet {
+                address 30.1.1.1/24;
+            }
+        }
+        unit 11 {
+            encapsulation ethernet;
+            peer-unit 10;
+            family inet {
+                address 30.1.1.2/24;
+            }
+        }
+    }
+    si-0/0/0 {
+        unit 0 {
+            family inet;
+        }
+    }
+    xe-0/0/0 {
+        gigether-options {
+            802.3ad ae0;
+        }
+    }
+    ge-0/0/1 {
+        unit 0 {
+            family inet;
+        }
+    }
+    xe-0/0/1 {
+        gigether-options {
+            802.3ad ae0;
+        }
+    }
+    ge-1/0/0 {
+        unit 0 {
+            family inet {
+                address 10.87.29.66/26;
+            }
+        }
+    }
+    ge-1/0/1 {
+        unit 0 {
+            family inet {
+                address 10.87.29.2/30;
+            }
+        }
+    }
+    ge-1/1/0 {
+        unit 0 {
+            family inet;
+        }
+    }
+    inactive: ge-1/1/1 {
+        vlan-tagging;
+        encapsulation flexible-ethernet-services;
+        gigether-options {
+            loopback;
+        }
+        unit 0 {
+            encapsulation vlan-bridge;
+            vlan-id 11;
+        }
+    }
+    inactive: ge-1/1/2 {
+        vlan-tagging;
+        encapsulation flexible-ethernet-services;
+        gigether-options {
+            loopback;
+        }
+        unit 0 {
+            encapsulation vlan-bridge;
+            vlan-id 10;
+        }
+    }
+    ge-1/1/4 {
+        vlan-tagging;
+        encapsulation flexible-ethernet-services;
+        unit 0 {
+            encapsulation vlan-bridge;
+            vlan-id 60;
+        }
+        inactive: unit 30 {
+            encapsulation vlan-bridge;
+            vlan-id 30;
+        }
+        unit 56 {
+            vlan-id 56;
+            family inet {
+                address 192.56.5.200/24;
+            }
+        }
+        unit 203 {
+            vlan-id 203;
+            family inet {
+                address 192.168.30.203/24;
+                address 192.168.32.2/24;
+            }
+        }
+    }
+    ge-1/1/5 {
+        vlan-tagging;
+        encapsulation flexible-ethernet-services;
+        unit 0 {
+            encapsulation vlan-bridge;
+            vlan-id 50;
+        }
+        unit 1 {
+            vlan-id 1;
+            family inet {
+                address 192.1.1.200/24;
+            }
+        }
+        unit 3 {
+            vlan-id 3;
+            family inet {
+                address 192.168.30.200/24;
+            }
+        }
+        unit 4 {
+            vlan-id 4;
+            family inet {
+                address 192.1.41.200/24;
+            }
+        }
+        unit 5 {
+            vlan-id 5;
+            family inet {
+                address 192.5.5.200/24;
+            }
+        }
+        inactive: unit 20 {
+            encapsulation vlan-bridge;
+            vlan-id 20;
+        }
+        unit 103 {
+            vlan-id 103;
+            family inet {
+                address 192.168.30.103/24;
+                address 192.168.31.2/24;
+            }
+        }
+    }
+    ge-1/1/6 {
+        vlan-tagging;
+        encapsulation flexible-ethernet-services;
+        unit 0 {
+            encapsulation vlan-bridge;
+            vlan-id 50;
+        }
+    }
+    ge-1/1/7 {
+        vlan-tagging;
+        encapsulation flexible-ethernet-services;
+        unit 0 {
+            encapsulation vlan-bridge;
+            vlan-id 20;
+        }
+        unit 3 {
+            encapsulation vlan-bridge;
+            vlan-id 3;
+        }
+    }
+    ge-1/1/8 {
+        unit 0;
+    }
+    ge-1/1/9 {
+        vlan-tagging;
+        encapsulation flexible-ethernet-services;
+        unit 30 {
+            encapsulation vlan-bridge;
+            vlan-id 30;
+        }
+    }
+    ge-1/3/9 {
+        vlan-tagging;
+        encapsulation flexible-ethernet-services;
+        unit 0 {
+            encapsulation vlan-bridge;
+            vlan-id 60;
+        }
+        inactive: unit 20 {
+            encapsulation vlan-bridge;
+            vlan-id 20;
+        }
+        inactive: unit 30 {
+            encapsulation vlan-bridge;
+            vlan-id 30;
+        }
+        unit 56 {
+            vlan-id 56;
+            family inet {
+                address 192.56.5.65/24;
+            }
+        }
+    }
+    ge-1/3/11 {
+        unit 0 {
+            family inet {
+                address 10.87.29.130/28;
+            }
+        }
+    }
+    ae0 {
+        mtu 9192;
+        aggregated-ether-options {
+            lacp {
+                periodic fast;
+            }
+        }
+        unit 0 {
+            family inet {
+                address 10.87.29.5/30;
+            }
+            family mpls;
+        }
+    }
+    irb {
+        unit 1 {
+            family inet {
+                address 192.168.1.100/24;
+            }
+        }
+        inactive: unit 3 {
+            family inet {
+                address 192.168.30.200/32;
+            }
+        }
+        unit 10 {
+            family inet;
+        }
+        unit 11 {
+            family inet;
+        }
+        unit 20 {
+            family inet {
+                address 192.168.20.200/24;
+            }
+        }
+        inactive: unit 30 {
+            family inet {
+                address 192.168.30.230/32;
+            }
+        }
+        unit 50 {
+            family inet {
+                address 192.5.50.100/24;
+            }
+        }
+        unit 60 {
+            family inet {
+                address 192.5.50.60/24;
+            }
+        }
+    }
+    lo0 {
+        unit 0 {
+            family inet {
+                address 10.87.29.8/32;
+            }
+        }
+        unit 1 {
+            family inet {
+                address 192.1.1.1/32;
+            }
+        }
+        inactive: unit 3 {
+            family inet {
+                address 192.168.30.100/32;
+            }
+        }
+        unit 4 {
+            family inet {
+                address 192.168.4.4/32;
+            }
+        }
+        unit 5 {
+            family inet {
+                address 192.5.5.100/32;
+            }
+        }
+        inactive: unit 20;
+        inactive: unit 30 {
+            family inet {
+                address 192.168.30.101/32;
+            }
+        }
+        unit 50 {
+            family inet {
+                address 192.5.0.1/32;
+            }
+        }
+        unit 56 {
+            family inet {
+                address 192.56.5.100/32;
+            }
+        }
+        unit 60 {
+            family inet {
+                address 192.6.0.1/32;
+            }
+        }
+        unit 103 {
+            family inet {
+                address 192.3.30.103/24;
+            }
+        }
+        inactive: unit 200 {
+            family inet {
+                address 10.87.29.89/28;
+            }
+        }
+        unit 203 {
+            family inet {
+                address 192.3.30.203/24;
+            }
+        }
+        inactive: unit 1004 {
+            family inet {
+                address 192.168.44.250/32;
+            }
+        }
+        inactive: unit 1008 {
+            family inet {
+                address 192.168.88.250/32;
+            }
+        }
+        inactive: unit 1010 {
+            family inet {
+                address 192.168.30.250/32;
+            }
+        }
+        inactive: unit 1011 {
+            family inet {
+                address 192.168.40.250/24;
+            }
+        }
+        inactive: unit 1090 {
+            family inet {
+                address 192.168.90.250/32;
+            }
+        }
+        inactive: unit 1100 {
+            family inet {
+                address 192.168.100.250/32;
+            }
+        }
+    }
+}
+snmp {
+    community public {
+        authorization read-only;
+    }
+}
+forwarding-options {
+    sampling {
+        instance {
+            sample-ins1 {
+                input {
+                    rate 1;
+                }
+                family inet {
+                    output {
+                        flow-server 10.87.29.77 {
+                            port 4739;
+                            version-ipfix {
+                                template {
+                                    t1;
+                                }
+                            }
+                        }
+                        inline-jflow {
+                            source-address 10.87.29.8;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+routing-options {
+    static {
+        rib-group inet-to-public;
+        route 0.0.0.0/0 {
+            next-hop 10.87.29.1;
+            retain;
+            readvertise;
+        }
+        route 10.87.29.10/32 next-hop 10.87.29.65;
+        route 10.87.29.64/26 next-hop 10.87.29.65;
+        route 172.16.80.0/24 next-hop 10.87.29.6;
+        route 10.87.29.176/28 next-hop 10.87.29.129;
+        route 10.87.29.160/28 next-hop 10.87.29.129;
+        route 10.87.29.0/26 next-hop 10.87.29.129;
+        route 10.87.29.192/26 next-hop 10.87.29.129;
+        route 192.168.100.0/24 next-hop [ 172.16.82.254 10.87.29.129 ];
+        route 10.87.29.144/28 next-hop 10.87.29.129;
+        route 10.87.29.208/28 next-hop 10.87.29.129;
+        route 10.87.29.233/32 next-table public.inet.0;
+        route 10.87.29.234/32 next-table public.inet.0;
+        route 10.88.0.0/24 next-hop 172.16.88.100;
+        route 10.87.29.80/28 next-hop [ lt-0/0/0.11 30.1.1.1 ];
+        route 10.87.29.87/32 next-hop lt-0/0/0.11;
+    }
+    rib-groups {
+        inet-to-public {
+            import-rib [ inet.0 public.inet.0 ];
+            import-policy leak-default-only;
+        }
+    }
+    router-id 10.87.29.8;
+    route-distinguisher-id 10.87.29.130;
+    autonomous-system 64512;
+    dynamic-tunnels {
+        contrail {
+            source-address 10.87.29.130;
+            udp;
+            destination-networks {
+                10.87.29.176/28;
+                192.168.100.0/24;
+            }
+        }
+    }
+}
+protocols {
+    mpls {
+        interface all;
+    }
+    bgp {
+        traceoptions {
+            file bgp.log;
+            flag all;
+        }
+        local-as 64512;
+        group CONTRAIL {
+            type internal;
+            local-address 10.87.29.130;
+            import getudp;
+            family inet-vpn {
+                unicast;
+            }
+            neighbor 192.168.100.140;
+        }
+    }
+    ospf {
+        area 0.0.0.0 {
+            interface ae0.0;
+            interface ge-1/3/11.0;
+        }
+    }
+    lldp {
+        interface all;
+    }
+}
+policy-options {
+    prefix-list FLOATING-IP-POOL {
+        10.87.29.233/32;
+    }
+    policy-statement addudp {
+        then {
+            community add udpcommunity;
+            accept;
+        }
+    }
+    policy-statement export-floating-ip-pool {
+        term 1 {
+            from {
+                prefix-list FLOATING-IP-POOL;
+            }
+            then accept;
+        }
+    }
+    policy-statement getudp {
+        term 1 {
+            from community udpcommunity;
+        }
+        then accept;
+    }
+    policy-statement leak-default-only {
+        term default {
+            from {
+                route-filter 0.0.0.0/0 exact;
+            }
+            then accept;
+        }
+        then reject;
+    }
+    policy-statement public-export {
+        then {
+            local-preference 1000;
+            community add public-target;
+        }
+    }
+    policy-statement send-direct {
+        term 1 {
+            from protocol direct;
+            then {
+                local-preference 1001;
+                accept;
+            }
+        }
+    }
+    policy-statement send-static {
+        term 1 {
+            from protocol static;
+            then accept;
+        }
+    }
+    community mplsoudp members 0x030c:64512:13;
+    community public-target members target:64512:1111;
+    community udpcommunity members 0x030c:64512:13;
+}
+firewall {
+    family inet {
+        filter count-left {
+            term a {
+                then count count-left;
+            }
+        }
+        filter count-right {
+            term a {
+                then count count-right;
+            }
+        }
+    }
+}
+routing-instances {
+    public {
+        instance-type vrf;
+        vrf-target target:64512:1111;
+        vrf-table-label;
+        routing-options {
+            static {
+                route 10.87.29.224/28 discard;
+                route 0.0.0.0/0 discard;
+            }
+        }
+    }
+}
