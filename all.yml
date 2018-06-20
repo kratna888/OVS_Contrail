@@ -1,0 +1,60 @@
+# Timeout settings for Ansible junos modules
+JUNOS_COMMIT_TIMEOUT: 600
+JUNOS_FACTS_TIMEOUT: 120
+JUNOS_COMMAND_TIMEOUT: 120
+
+# Device states for prouter object log
+DEVICE_STATE:
+  DISCOVERED: "DISCOVERED"
+  ONBOARDED: "ONBOARDED"
+  UNDERLAY_CONFIGURED: "UNDERLAY_CONFIGURED"
+  IMAGE_UPGRADED: "IMAGE_UPGRADED"
+
+JOBLOG_STATUS:
+  IN_PROGRESS: 1
+
+# Job context to be passed to ansible modules
+job_ctx:
+  job_template_fqname: "{{ playbook_input.job_template_fqname }}"
+  job_execution_id: "{{ playbook_input.job_execution_id }}"
+  config_args: "{{ playbook_input.args }}"
+  job_input: "{{ playbook_input.input }}"
+  auth_token: "{{ playbook_input.auth_token }}"
+
+#pool size
+POOL_SIZE: 500
+
+#vendor mapping
+vendor_mapping:
+  - vendor: Juniper
+    oid: 1.3.6.1.4.1.2636
+  - vendor: Cisco
+    oid: 1.3.6.1.4.1.9
+
+#oid mapping for supported devices
+device_family_info:
+  - vendor: Juniper
+    snmp_probe:
+      - oid: 1.3.6.1.4.1.2636.1.1.1.4.82.8
+        family: junos-qfx
+        product: qfx5100
+      - oid: 1.3.6.1.4.1.2636.1.1.1.4.82.5
+        family: junos-qfx
+        product: qfx5100
+      - oid: 1.3.6.1.4.1.2636.1.1.1.4.82.10
+        family: junos-qfx
+        product: qfx10002
+      - oid: 1.3.6.1.4.1.2636.1.1.1.2.29
+        family: junos
+        product: mx240
+      - oid: 1.3.6.1.4.1.2636.1.1.1.2.11
+        family: junos
+        product: m10i
+      - oid: 1.3.6.1.4.1.2636.1.1.1.2.57
+        family: junos
+        product: mx80
+    ssh_probe:
+      - command: echo "show system information | display xml" | cli
+        data_format: xml
+      - command: show system information | display xml
+        data_format: xml
